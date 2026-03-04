@@ -133,5 +133,33 @@ loadRoom();
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
+<script>
+  const database = firebase.database();
+  const chatRef = database.ref("messages");
+
+  function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const message = input.value;
+
+    if (message.trim() !== "") {
+      chatRef.push({
+        text: message,
+        timestamp: Date.now()
+      });
+      input.value = "";
+    }
+  }
+
+  chatRef.on("child_added", function(snapshot) {
+    const msg = snapshot.val();
+    const msgDiv = document.createElement("div");
+    msgDiv.textContent = msg.text;
+    document.getElementById("chatBox").appendChild(msgDiv);
+  });
+</script>
 </body>
+  <div id="chatBox"></div>
+
+<input type="text" id="messageInput" placeholder="Type message...">
+<button onclick="sendMessage()">Send</button>
 </html>
